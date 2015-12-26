@@ -19,7 +19,6 @@ public class UserPreferences {
             PREFIX_SPARSE_VALUE = "value_";
     private static final String TAG = UserPreferences.class.getName();
     private final Context context;
-    // TODO : Change architecture to chain method ending by apply (only one transaction)
     private SharedPreferences preferences;
 
     private Array array = new Array();
@@ -30,13 +29,19 @@ public class UserPreferences {
         this.context = context;
     }
 
+    // Override this function to set your shared preferences name
+    protected String getSharedPreferencesName() {
+        return "";
+    }
+
+    protected Context getContext() {
+        return context;
+    }
+
     public SharedPreferences getPreferences() {
         return preferences;
     }
 
-    protected String getSharedPreferencesName() {
-        return "";
-    }
 
     protected void putString(String keyPref, String cache) {
         preferences.edit()
@@ -44,24 +49,20 @@ public class UserPreferences {
                 .apply();
     }
 
-    protected String getJson(String keyPref) {
+    public String getJson(String keyPref) {
         return cleanJsonString(getString(keyPref));
     }
 
-    protected String getString(String keyPref) {
+    public String getString(String keyPref) {
         return preferences.getString(keyPref, "");
     }
 
-    protected Integer getInt(String keyPref) {
+    public Integer getInt(String keyPref) {
         return preferences.getInt(keyPref, -1);
     }
 
-    protected Long getLong(String keyPref) {
+    public Long getLong(String keyPref) {
         return preferences.getLong(keyPref, -1);
-    }
-
-    protected Context getContext() {
-        return context;
     }
 
     public Sparse Sparse() {
@@ -70,6 +71,11 @@ public class UserPreferences {
 
     public Array Array() {
         return array;
+    }
+
+
+    private static String cleanJsonString(String json) {
+        return json.replace("\\", "").replace("\"{","{").replace("}\"", "}");
     }
 
     public class Array {
@@ -249,9 +255,5 @@ public class UserPreferences {
         public SparseArray<Boolean> sparseBoolean(String keyPref) {
             return sparse(keyPref, Boolean.class);
         }
-    }
-
-    private static String cleanJsonString(String json) {
-        return json.replace("\\", "").replace("\"{","{").replace("}\"", "}");
     }
 }
